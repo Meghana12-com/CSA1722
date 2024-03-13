@@ -1,0 +1,36 @@
+class VacuumCleaner:
+    def __init__(self, initial_location):
+        self.location = initial_location
+
+    def move(self, new_location):
+        self.location = new_location
+
+    def clean(self):
+        print(f"Cleaning room {self.location}")
+
+def vacuum_cleaner_simulation(room1, room2, initial_location):
+    cleaner = VacuumCleaner(initial_location)
+
+    # Initial state
+    print(f"Starting at room {cleaner.location}")
+
+    # First room
+    cleaner.clean()
+    print(f"Moving to room {room2}")
+    cleaner.move(room2)
+    cleaner.clean()
+
+    # Second room
+    print(f"Moving back to room {room1}")
+    cleaner.move(room1)
+    cleaner.clean()
+
+    print("Cleaning complete.")
+
+if __name__ == "__main__":
+    room1 = "Living Room"
+    room2 = "Bedroom"
+    initial_location = room1
+
+    vacuum_cleaner_simulation(room1, room2, initial_location)
+
