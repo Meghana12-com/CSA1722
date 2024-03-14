@@ -1,0 +1,42 @@
+import sys
+
+class TSP:
+    def __init__(self, graph):
+        self.graph = graph
+        self.num_cities = len(graph)
+
+    def nearest_neighbor(self, start_vertex):
+        visited = [False] * self.num_cities
+        path = [start_vertex]
+        visited[start_vertex] = True
+
+        for _ in range(self.num_cities - 1):
+            min_dist = sys.maxsize
+            nearest_city = None
+            current_vertex = path[-1]
+
+            for neighbor, distance in enumerate(self.graph[current_vertex]):
+                if not visited[neighbor] and distance < min_dist:
+                    min_dist = distance
+                    nearest_city = neighbor
+
+            path.append(nearest_city)
+            visited[nearest_city] = True
+
+        path.append(start_vertex)  # Return to the starting vertex
+        return path
+
+# Example usage:
+if __name__ == "__main__":
+    # Example graph representing distances between cities
+    graph = [
+        [0, 10, 15, 20],
+        [10, 0, 35, 25],
+        [15, 35, 0, 30],
+        [20, 25, 30, 0]
+    ]
+
+    tsp_solver = TSP(graph)
+    start_vertex = 0
+    shortest_path = tsp_solver.nearest_neighbor(start_vertex)
+    print("Shortest TSP path:", shortest_path)
