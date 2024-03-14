@@ -1,0 +1,78 @@
+import heapq
+
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.adjacency_list = {vertex: {} for vertex in vertices}
+
+    def add_edge(self, u, v, weight):
+        self.adjacency_list[u][v] = weight
+        self.adjacency_list[v][u] = weight  # Assuming an undirected graph
+
+    def heuristic(self, start, goal):
+        # Manhatten distance heuristic
+        return abs(start[0] - goal[0]) + abs(start[1] - goal[1])
+
+    def astar(self, start, goal):
+        open_list = []
+        closed_set = set()
+        came_from = {}
+        g_score = {vertex: float('inf') for vertex in self.vertices}
+        g_score[start] = 0
+        f_score = {vertex: float('inf') for vertex in self.vertices}
+        f_score[start] = self.heuristic(start, goal)
+
+        heapq.heappush(open_list, (f_score[start], start))
+
+        while open_list:
+            current_f, current_vertex = heapq.heappop(open_list)
+
+            if current_vertex == goal:
+                path = []
+                while current_vertex in came_from:
+                    path.append(current_vertex)
+                    current_vertex = came_from[current_vertex]
+                path.append(start)
+                return path[::-1]
+
+            closed_set.add(current_vertex)
+
+            for neighbor, weight in self.adjacency_list[current_vertex].items():
+                if neighbor in closed_set:
+                    continue
+
+                tentative_g_score = g_score[current_vertex] + weight
+
+                if tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current_vertex
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = g_score[neighbor] + self.heuristic(neighbor, goal)
+                    heapq.heappush(open_list, (f_score[neighbor], neighbor))
+
+        return None  # No path found
+
+# Example usage:
+if __name__ == "__main__":
+    # Example graph representing a grid
+    grid = [
+        (0, 0), (1, 0), (2, 0), (3, 0),
+        (0, 1), (1, 1), (2, 1), (3, 1),
+        (0, 2), (1, 2), (2, 2), (3, 2),
+        (0, 3), (1, 3), (2, 3), (3, 3)
+    ]
+
+    graph = Graph(grid)
+
+    # Define edges (movements)
+    for x in range(4):
+        for y in range(4):
+            if x < 3:
+                graph.add_edge((x, y), (x + 1, y), 1)
+            if y < 3:
+                graph.add_edge((x, y), (x, y + 1), 1)
+
+    start = (0, 0)
+    goal = (3, 3)
+
+    shortest_path = graph.astar(start, goal)
+    print("Shortest path from", start, "to", goal, ":", shortest_path)
